@@ -4,7 +4,8 @@ New tools recognize .jsx and automatically import React so it isn't required.
 May still exist in older code bases.
 
 class is a reserved name in JavaScript so we have to use className
-for is reservered in JS as well (for loops, etc), so we have to use htmlFor="" */
+for is reservered in JS as well (for loops, etc), so we have to use htmlFor="" 
+<input> is valid html, but not valid JSX, you have to add a self closing tag <input /> */
 }
 
 const Pizza = (props) => {
