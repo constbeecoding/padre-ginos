@@ -1,6 +1,8 @@
 import js from "@eslint/js";
 import globals from "globals";
 import prettier from "eslint-config-prettier";
+import reactPlugin from "eslint-plugin-react";
+import { rules } from "@eslint/js/src/configs/eslint-all";
 
 // Prettier config always has to be last
 // This is useful for CI/CD (maybe for github actions)
@@ -8,6 +10,15 @@ import prettier from "eslint-config-prettier";
 /** @type {import('eslint).Linter.Config[]} */
 export default [
   js.configs.recommended,
+  {
+    ...reactPlugin.configs.flat.recommended,
+    settings: {
+      react: {
+        version: "detect",
+      },
+    },
+  },
+  reactPlugin.configs.flat["jsx-runtime"],
   {
     files: ["**/*.js", "**/*.jsx"],
     languageOptions: {
@@ -17,6 +28,10 @@ export default [
           jsx: true,
         },
       },
+    },
+    rules: {
+      "react/no-unescaped-entities": "off",
+      "react/prop-types": "off",
     },
   },
   prettier,
