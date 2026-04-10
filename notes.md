@@ -48,3 +48,31 @@ New tools recognize .jsx and automatically import React so it isn't required. Ma
 - `<input>` is valid html, but not valid JSX, you have to add a self closing tag `<input />`
 - lowercase tags at a glance are easy to see what is a native DOM component vs what is a user-created component, which is Capitalized.
 -
+
+## Named Functions vs Anon Functions
+
+Named (easier to debug will show up in Stack Trace "Order")
+
+```jsx
+export default function Order() {}
+```
+
+Anon (will show up as coming from "Pizza" Component but not the name of the function)
+
+```jsx
+const Pizza = (props) => {};
+```
+
+## Hook Rules
+
+Gets called in the same order every single time in render functions. Strict Ordering.
+
+You can't use them inside conditionals. For Loops, While Loops, Do Loops, etc. Always top level.
+
+They depend on being called in the same order each time. In conditionals sometimes they can be called out of order. For example in this app Medium could show up in Pizza Type rather than Pizza Size which doesn't make sense and isn't what we want.
+
+```jsx
+if (lol) {
+  useState;
+}
+```
