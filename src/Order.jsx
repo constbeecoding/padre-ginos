@@ -1,13 +1,42 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Pizza from "./Pizza";
 
-export default function Order() {
-  //   const pizzaType = "pepperoni";
-  //   const pizzaSize = "M";
+const intl = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+});
 
+export default function Order() {
+  const [pizzaTypes, setPizzaTypes] = useState([]);
   const [pizzaType, setPizzaType] = useState("pepperoni");
   const [pizzaSize, setPizzaSize] = useState("M");
+  const [loading, setLoading] = useState(true);
   console.log(pizzaType, pizzaSize);
+
+  //mutable, changable based on the state of the consts above. (whatever is selected)
+  let price, selectedPizza;
+
+  if (!loading) {
+    selectedPizza = pizzaTypes.find((pizza) => pizzaType === pizza.id);
+    price = intl.format(
+      selectedPizza.sizes ? selectedPizza.sizes[pizzaSize] : "",
+    );
+  }
+
+  //side effect function
+  async function fetchPizzaTypes() {
+    // await new Promise((resolve) => setTimeout(resolve, 10000));
+    const pizzaRes = await fetch("/api/pizzas");
+    const pizzaJson = await pizzaRes.json();
+    setPizzaTypes(pizzaJson);
+    setLoading(false);
+  }
+
+  //wrap fetchPizzaTypes in useEffect so this doesn't run each time the component is rendered
+  //[] tells this to run once at the beginning; not when a variable happens, say when [pizzaSize] changes
+  useEffect(() => {
+    fetchPizzaTypes();
+  }, []);
 
   return (
     <div className="order">
@@ -21,9 +50,11 @@ export default function Order() {
               name="pizza-type"
               value={pizzaType}
             >
-              <option value="pepperoni">The Pepperoni Pizza</option>
-              <option value="hawaiian">The Hawaiian Pizza</option>
-              <option value="big_meat">The Big Meat Pizza</option>
+              {pizzaTypes.map((pizza) => (
+                <option key={pizza.id} value={pizza.id}>
+                  {pizza.name}
+                </option>
+              ))}
             </select>
           </div>
           <div>
@@ -66,14 +97,18 @@ export default function Order() {
           </div>
           <button type="submit">Add to Cart</button>
         </div>
-        <div className="order-pizza">
-          <Pizza
-            name="Pepperoni"
-            description="Mozzarella Cheese, Pepperoni"
-            image="/public/pizzas/pepperoni.webp"
-          />
-          <p>$13.37</p>
-        </div>
+        {loading ? (
+          <h1>loading pizza lol</h1>
+        ) : (
+          <div className="order-pizza">
+            <Pizza
+              name={selectedPizza.name}
+              description={selectedPizza.description}
+              image={selectedPizza.image}
+            />
+            <p>{price}</p>
+          </div>
+        )}
       </form>
     </div>
   );

@@ -76,3 +76,45 @@ if (lol) {
   useState;
 }
 ```
+
+## Effects
+
+Note from [React Docs](https://react.dev/learn/you-might-not-need-an-effect):
+
+```quote
+Effects are an escape hatch from the React paradigm. They let you “step outside” of React and synchronize your components with some external system like a non-React widget, network, or the browser DOM. If there is no external system involved (for example, if you want to update a component’s state when some props or state change), you shouldn’t need an Effect. Removing unnecessary Effects will make your code easier to follow, faster to run, and less error-prone.
+```
+
+Controlling when something is rendered/called (for example fetching data from an API), we want it to run ONCE. Not EVERY TIME a component is rendered. Just when a component first loads.
+
+We can say for example "Hey, only when this is different from the PREVIOUS render, do this action again." With a second param within the array below [pizzaSize].
+
+```jsx
+async function fetchPizzaTypes() {
+  const pizzaRes = await fetch("/api/pizzas");
+  const pizzaJson = await pizzaRes.json();
+  setPizzaTypes(pizzaJson);
+  setLoading(false);
+}
+
+useEffect(() => {
+  fetchPizzaTypes();
+}, [pizzaSize]);
+```
+
+But if we only want it to run ONCE without tracking any variables we would leave it an empty array like so:
+
+```jsx
+async function fetchPizzaTypes() {
+  const pizzaRes = await fetch("/api/pizzas");
+  const pizzaJson = await pizzaRes.json();
+  setPizzaTypes(pizzaJson);
+  setLoading(false);
+}
+
+useEffect(() => {
+  fetchPizzaTypes();
+}, []);
+```
+
+\*Remember an async function returns promises. (With useEffect the return type matters, and you have to provide a cleanup function see docs [React: useEffect](https://react.dev/reference/react/useEffect#:~:text=You%20can%20also%20rewrite%20using%20the%20async%20/%20await%20syntax%2C%20but%20you%20still%20need%20to%20provide%20a%20cleanup%20function%3A))
